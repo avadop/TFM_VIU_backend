@@ -14,4 +14,20 @@ class Usuario extends Persona
         $this->fillable = array_merge($this->fillable, ['contrasenya']);
         parent::__construct($attributes);
     }
+
+    public static function getUsuarioById($id) {
+        return self::findOrFail($id);
+    }
+
+    public function createUsuario() {
+        return self::save();
+    }
+
+    public function updateUsuario() {
+        return self::save();
+    }
+
+    public function deleteUsuario() {
+        return self::delete();
+    }
 }
