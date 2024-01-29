@@ -11,7 +11,7 @@ class Usuario extends Persona
     protected $table = 'usuarios';
 
     public function __construct(array $attributes = []) {
-        parent::__construct($attributes);
         $this->fillable = array_merge($this->fillable, ['contrasenya']);
+        parent::__construct($attributes);
     }
 }

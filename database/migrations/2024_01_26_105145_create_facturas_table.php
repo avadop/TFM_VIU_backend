@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('facturas', function (Blueprint $table) {
-            $table->ulid('id_factura');
+            $table->bigIncrements('id_factura');
             $table->date('fecha_emision');
             $table->date('fecha_vencimiento');
             $table->enum('estado_pago', ['pendiente','pagado', 'vencido'])->default('pendiente');
@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('id_emisor');
             $table->foreign('id_receptor')->references('nif')->on('clientes')->onDelete('restrict')->onUpdate('cascade');
             $table->foreign('id_emisor')->references('nif')->on('usuarios')->onDelete('cascade')->onUpdate('cascade')->nullable();
+            $table->timestamps();
         });
     }
 

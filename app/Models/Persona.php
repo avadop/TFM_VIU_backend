@@ -9,8 +9,9 @@ class Persona extends Model
 {
     use HasFactory;
 
-    protected $primary_key = 'nif';
-
+    protected $primaryKey = 'nif';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [     
         'nif',
         'nombre',

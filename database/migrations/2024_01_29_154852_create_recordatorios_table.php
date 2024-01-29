@@ -11,19 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clientes', function (Blueprint $table) {            
-            $table->string('nif',9)->primary();
-            $table->string('nombre');
-            $table->string('apellidos');
-            $table->string('correo_electronico');
-            $table->string('direccion');
-            $table->string('codigo_postal');
-            $table->string('poblacion');
-            $table->string('provincia');
-            $table->string('pais');
+        Schema::create('recordatorios', function (Blueprint $table) {
+            $table->bigIncrements('id_recordatorio');
+            $table->string('mensaje');
+            $table->date('fecha_creacion');
+            $table->integer('periodo_recordatorio');
             $table->string('id_usuario');
             $table->foreign('id_usuario')->references('nif')->on('usuarios')->onDelete('cascade')->onUpdate('cascade');
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -33,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clientes');
+        Schema::dropIfExists('recordatorios');
     }
 };

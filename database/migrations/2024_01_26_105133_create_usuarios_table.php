@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('poblacion');
             $table->string('provincia');
             $table->string('pais');
+            $table->timestamps();
         });
     }
 

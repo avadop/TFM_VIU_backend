@@ -2,18 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factura;
+use App\Models\ResultResponse;
 use Exception;
 use Illuminate\Http\Request;
-use App\Models\Cliente;
-use App\Models\ResultResponse;
 
-class ClienteController extends Controller
+class FacturaController extends Controller
 {
-    public function getAllByIdUsuario($id_usuario) {
-        $clientes = Cliente::getAllClientesUsuario($id_usuario);
+    public function getAllByIdReceptor($id_receptor) {
+        $facturas = Factura::getAllFacturasReceptor($id_receptor);
 
         $resultResponse = new ResultResponse();
-        $resultResponse->setData($clientes);
+        $resultResponse->setData($facturas);
+        $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
+        $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
+
+        $json = json_encode($resultResponse, JSON_PRETTY_PRINT);
+
+        return response($json)->header('Content-Type', 'application/json');
+    }
+
+    public function getAllByIdEmisor($id_emisor) {
+        $facturas = Factura::getAllFacturasEmisor($id_emisor);
+
+        $resultResponse = new ResultResponse();
+        $resultResponse->setData($facturas);
         $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
         $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
 
@@ -26,9 +39,9 @@ class ClienteController extends Controller
         $resultResponse = new ResultResponse();
 
         try {
-            $cliente = Cliente::getClienteById($id);
+            $factura = Factura::getFacturaById($id);
 
-            $resultResponse->setData($cliente);
+            $resultResponse->setData($factura);
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         } catch (Exception $e) {
@@ -47,29 +60,20 @@ class ClienteController extends Controller
         $resultResponse = new ResultResponse();
     
         try {
-            $this->validateCliente($request, $requestContent);
+            $this->validateFactura($request, $requestContent);
 
-            $newCliente = new Cliente([
-                'nif' => $requestContent['nif'],
-                'nombre' => $requestContent['nombre'],
-                'apellidos' => $requestContent['apellidos'],
-                'correo_electronico' => $requestContent['correo_electronico'],
-                'direccion' => $requestContent['direccion'],
-                'codigo_postal' => $requestContent['codigo_postal'],
-                'poblacion' => $requestContent['poblacion'],
-                'provincia' => $requestContent['provincia'],
-                'pais' => $requestContent['pais'],
-                'id_usuario' => $requestContent['id_usuario']
+            $newFactura = new Factura([
+                'fecha_emision' => $requestContent['fecha_emision'],
+                'fecha_vencimiento' => $requestContent['fecha_vencimiento'],
+                'precio_total' => $requestContent['precio_total'],
+                'estado_pago' => $requestContent['estado_pago'],
+                'id_emisor' => $requestContent['id_emisor'],
+                'id_receptor' => $requestContent['id_receptor']
             ]);
 
-            try {
-                Cliente::getDeletedClienteById($newCliente->nif);
-                $newCliente->restoreCliente();
-            } catch (Exception $e) {
-                $newCliente->createCliente();
-            }
+            $newFactura->createFactura();
 
-            $resultResponse->setData($newCliente);
+            $resultResponse->setData($newFactura);
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         } catch (Exception $e) {
@@ -86,10 +90,10 @@ class ClienteController extends Controller
         $resultResponse = new ResultResponse();
 
         try {
-            $cliente = Cliente::getClienteById($id);
-            $cliente->deleteCliente();
+            $factura = Factura::getFacturaById($id);
+            $factura->deleteFactura();
 
-            $resultResponse->setData($cliente);
+            $resultResponse->setData($factura);
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         }
@@ -103,20 +107,16 @@ class ClienteController extends Controller
         return response($json)->header('Content-Type','application/json');
     }
 
-    private function validateCliente($request, $content) {
+    private function validateFactura($request, $content) {
         $rules = [];
 
         $validationRules = [
-            'nif' => 'required|size:9',
-            'nombre'=> 'required',
-            'apellidos'=> 'required',
-            'correo_electronico'=> 'required|email',
-            'direccion'=> 'required',
-            'codigo_postal'=> 'required',
-            'provincia'=> 'required',
-            'pais'=> 'required',
-            'poblacion'=> 'required',
-            'id_usuario' => 'required|size:9'
+            'fecha_emision'=> 'required|date',
+            'fecha_vencimiento'=> 'required|date',
+            'precio_total' => 'required',
+            'estado_pago'=> 'required',
+            'id_emisor' => 'required',
+            'id_receptor' => 'required'
         ];
 
         foreach ($validationRules as $field => $validationRule) {

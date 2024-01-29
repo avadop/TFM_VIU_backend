@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\FacturaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,11 +20,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API CLIENTES
+// ENDPOINTS CLIENTES
 Route::controller(ClienteController::class)->prefix('clientes')-> group(function () {
-    Route::get('/{id_usuario}', 'getAllByIdUsuario');
+    Route::get('/usuario/{id_usuario}', 'getAllByIdUsuario');
     Route::get('/{id}', 'getById');
-    Route::get('/new', 'create');
-    Route::get('/{id}', 'update');
-    Route::get('/{id}', 'delete');
+    Route::post('/new', 'create');
+    Route::put('/{id}', 'update');
+    Route::delete('/{id}', 'delete');
+});
+
+// ENDPOINTS FACTURAS
+Route::controller(FacturaController::class)->prefix('facturas')-> group(function () {
+    Route::get('/emisor/{id_usuario}', 'getAllByIdEmisor');
+    Route::get('/receptor/{id_usuario}', 'getAllByIdReceptor');
+    Route::get('/{id}', 'getById');
+    Route::post('/new', 'create');
+    Route::put('/{id}', 'update');
+    Route::delete('/{id}', 'delete');
 });
