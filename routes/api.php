@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProductosFacturaController;
+use App\Http\Controllers\RecordatorioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +36,33 @@ Route::controller(ClienteController::class)->prefix('clientes')-> group(function
 Route::controller(FacturaController::class)->prefix('facturas')-> group(function () {
     Route::get('/emisor/{id_usuario}', 'getAllByIdEmisor');
     Route::get('/receptor/{id_usuario}', 'getAllByIdReceptor');
+    Route::get('/{id}', 'getById');
+    Route::post('/new', 'create');
+    Route::put('/{id}', 'update');
+    Route::delete('/{id}', 'delete');
+});
+
+// ENDPOINTS PRODUCTOS
+Route::controller(ProductoController::class)->prefix('productos')-> group(function () {
+    Route::get('/usuario/{id_usuario}', 'getAllByIdUsuario');
+    Route::get('/{id}', 'getById');
+    Route::post('/new', 'create');
+    Route::put('/{id}', 'update');
+    Route::delete('/{id}', 'delete');
+});
+
+// ENDPOINTS RECORDATORIOS
+Route::controller(RecordatorioController::class)->prefix('recordatorios')-> group(function () {
+    Route::get('/usuario/{id_usuario}', 'getAllByIdUsuario');
+    Route::get('/{id}', 'getById');
+    Route::post('/new', 'create');
+    Route::put('/{id}', 'update');
+    Route::delete('/{id}', 'delete');
+});
+
+// ENDPOINTS PRODUCTOS FACTURAS
+Route::controller(ProductosFacturaController::class)->prefix('productos_facturas')-> group(function () {
+    Route::get('/factura_id/{id_factura}', 'getAllByIdFactura');
     Route::get('/{id}', 'getById');
     Route::post('/new', 'create');
     Route::put('/{id}', 'update');
