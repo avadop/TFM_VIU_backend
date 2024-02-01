@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProductosFacturaController;
 use App\Http\Controllers\RecordatorioController;
+use App\Http\Controllers\UsuarioController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +23,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// ENDPOINTS USUARIO
+Route::controller(UsuarioController::class)->prefix('usuarios')-> group(function () {
+    Route::post('/new', 'create');
+    Route::get('/login', 'login');
+    Route::get('/{id}', 'getById');
+    Route::put('/{id}', 'update');
+    Route::delete('/{id}', 'delete');
 });
 
 // ENDPOINTS CLIENTES
