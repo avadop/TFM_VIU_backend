@@ -62,7 +62,7 @@ class RecordatorioController extends Controller
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         } catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
@@ -83,9 +83,45 @@ class RecordatorioController extends Controller
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         }
         catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+        }
+
+        $json = json_encode($resultResponse, JSON_PRETTY_PRINT);
+        return response($json)->header('Content-Type','application/json');
+    }
+
+
+    public function update(Request $request) {
+        $requestContent = json_decode($request->getContent(), true);
+        $resultResponse = new ResultResponse();
+    
+        try {
+            $this->validateRecordatorio($request, $requestContent);
+    
+            try {
+                $recordatorio = Recordatorio::getRecordatorioById($requestContent['id_recordatorio']);
+
+                $recordatorio->mensaje = $requestContent['mensaje'];
+                $recordatorio->fecha_creacion = $requestContent['fecha_creacion'];
+                $recordatorio->periodo_recordatorio = $requestContent['periodo_recordatorio'];
+
+                $recordatorio->updateRecordatorio();
+
+                $resultResponse->setData($recordatorio);
+                $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
+
+            }catch (Exception $e) {
+                $resultResponse->setData($e->getMessage());
+                $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+            }
+        } catch (Exception $e) {
+            $resultResponse->setData($e->getMessage());
+            $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
+            $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
 
         $json = json_encode($resultResponse, JSON_PRETTY_PRINT);

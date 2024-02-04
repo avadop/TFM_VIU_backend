@@ -61,7 +61,7 @@ class ProductosFacturaController extends Controller
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         } catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
@@ -82,9 +82,45 @@ class ProductosFacturaController extends Controller
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         }
         catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+        }
+
+        $json = json_encode($resultResponse, JSON_PRETTY_PRINT);
+        return response($json)->header('Content-Type','application/json');
+    }
+
+
+    public function update(Request $request) {
+        $requestContent = json_decode($request->getContent(), true);
+        $resultResponse = new ResultResponse();
+    
+        try {
+            $this->validateProductosFactura($request, $requestContent);
+    
+            try {
+                $productos_factura = ProductosFactura::getProductosFacturaById($requestContent['id_productos_factura']);
+
+                $productos_factura->cantidad = $requestContent['cantidad'];
+                $productos_factura->id_producto = $requestContent['id_producto'];
+                $productos_factura->id_factura = $requestContent['id_factura'];
+
+                $productos_factura->updateProductosFactura();
+
+                $resultResponse->setData($productos_factura);
+                $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
+
+            }catch (Exception $e) {
+                $resultResponse->setData($e->getMessage());
+                $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+            }
+        } catch (Exception $e) {
+            $resultResponse->setData($e->getMessage());
+            $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
+            $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
 
         $json = json_encode($resultResponse, JSON_PRETTY_PRINT);

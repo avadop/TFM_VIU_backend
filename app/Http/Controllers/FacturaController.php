@@ -77,7 +77,7 @@ class FacturaController extends Controller
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         } catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
@@ -98,9 +98,49 @@ class FacturaController extends Controller
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         }
         catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+        }
+
+        $json = json_encode($resultResponse, JSON_PRETTY_PRINT);
+        return response($json)->header('Content-Type','application/json');
+    }
+
+
+    public function update(Request $request) {
+        $requestContent = json_decode($request->getContent(), true);
+        $resultResponse = new ResultResponse();
+    
+        try {
+            $this->validateFactura($request, $requestContent);
+    
+            try {
+                $factura = Factura::getFacturaById($requestContent['id_factura']);
+
+                $factura->fecha_emision = $requestContent['fecha_emision'];
+                $factura->fecha_vencimiento = $requestContent['fecha_vencimiento'];
+                $factura->precio_total = $requestContent['precio_total'];
+                $factura->estado_pago = $requestContent['estado_pago'];
+                $factura->id_emisor = $requestContent['id_emisor'];
+                $factura->id_receptor = $requestContent['id_receptor'];
+                
+
+                $factura->updateFactura();
+
+                $resultResponse->setData($factura);
+                $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
+
+            }catch (Exception $e) {
+                $resultResponse->setData($e->getMessage());
+                $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+            }
+        } catch (Exception $e) {
+            $resultResponse->setData($e->getMessage());
+            $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
+            $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
 
         $json = json_encode($resultResponse, JSON_PRETTY_PRINT);

@@ -73,7 +73,7 @@ class ClienteController extends Controller
             $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         } catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
@@ -94,9 +94,49 @@ class ClienteController extends Controller
             $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
         }
         catch (Exception $e) {
-            $resultResponse->setData($e);
+            $resultResponse->setData($e->getMessage());
             $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
             $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+        }
+
+        $json = json_encode($resultResponse, JSON_PRETTY_PRINT);
+        return response($json)->header('Content-Type','application/json');
+    }
+
+    public function update(Request $request) {
+        $requestContent = json_decode($request->getContent(), true);
+        $resultResponse = new ResultResponse();
+    
+        try {
+            $this->validateCliente($request, $requestContent);
+    
+            try {
+                $cliente = Cliente::getClienteById($requestContent['nif']);
+
+                $cliente->nombre = $requestContent['nombre'];
+                $cliente->apellidos = $requestContent['apellidos'];
+                $cliente->correo_electronico = $requestContent['correo_electronico'];
+                $cliente->direccion = $requestContent['direccion'];
+                $cliente->codigo_postal = $requestContent['codigo_postal'];
+                $cliente->poblacion = $requestContent['poblacion'];
+                $cliente->provincia = $requestContent['provincia'];
+                $cliente->pais = $requestContent['pais'];
+
+                $cliente->updateCliente();
+
+                $resultResponse->setData($cliente);
+                $resultResponse->setStatusCode(ResultResponse::SUCCESS_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_SUCCESS_CODE);
+
+            }catch (Exception $e) {
+                $resultResponse->setData($e->getMessage());
+                $resultResponse->setStatusCode(ResultResponse::ERROR_ELEMENT_NOT_FOUND_CODE);
+                $resultResponse->setMessage(ResultResponse::TXT_ERROR_ELEMENT_NOT_FOUND_CODE);
+            }
+        } catch (Exception $e) {
+            $resultResponse->setData($e->getMessage());
+            $resultResponse->setStatusCode(ResultResponse::ERROR_CODE);
+            $resultResponse->setMessage(ResultResponse::TXT_ERROR_CODE);
         }
 
         $json = json_encode($resultResponse, JSON_PRETTY_PRINT);
