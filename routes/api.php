@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // ENDPOINTS USUARIO
 Route::controller(UsuarioController::class)->prefix('usuarios')-> group(function () {
     Route::post('/new', 'create');
-    Route::get('/login', 'login');
+    Route::post('/login', 'login');
     Route::get('/{id}', 'getById');
     Route::put('/{id}', 'update');
     Route::delete('/{id}', 'delete');
